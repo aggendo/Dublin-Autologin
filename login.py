@@ -3,6 +3,7 @@ import requests
 from sys import platform as OSName
 from os import name as SYSPlat
 import logging
+import time
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
 url = 'https://192.168.23.1:4100/wgcgi.cgi'
 Uport=4100
@@ -23,7 +24,8 @@ def attempt_login():
     req = requests.post(url, data=Data, verify=Verify)#prename+Username+prepass+str(Password)+footer)
     #print(req.text)
     if(match in req.text): #login failed
-        
+        logging.error("you must have set things wrong because login failed")
+        exit(0)
 
 def checkwifi():
     #here is some trickery to work in windows
@@ -47,7 +49,12 @@ def checkwifi():
                             return(True)
             e=e+1; #maybe cleanup later
     elif SYSPlat == 'linux2':
-        pass #TODO: Linux code here
+        from pythonwifi.iwlibs import Wireless
+        wifi = Wireless('wlan0')
+        if(wifi.getEssid()=="student"):
+            return(True)
 
 if(__name__=="__main__"):
-    checkwifi()
+    while True:
+        checkwifi()
+        time.sleep(60*15) #wait 15m
