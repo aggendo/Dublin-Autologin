@@ -62,7 +62,16 @@ class prompt_something:
     def start(self):
         self.diag.mainloop()
 
+
+
 class Uname_and_pass_widget:
+
+    def what_size(self, event):
+        height = self.intframe.winfo_reqheight() + self.unameframe.winfo_reqheight() + self.upassframe.winfo_reqheight() + self.bheight
+        self.diag.minsize(300, height)
+        self.diag.maxsize(500, height)
+    
+    
     def __init__(self):
         self.diag = tk.Tk()
         self.diag.wm_title=('AutoLogin Settings')
@@ -77,22 +86,33 @@ class Uname_and_pass_widget:
         interval =  create_linked_entry(self.diag, 'interval')
         interval[0].grid(row=0,column=0, sticky='nsew', padx=3)
         self.interval = interval[1]
+        self.intframe = interval[0]
         #TODO: read interval from config file and put it in the bar
         helptext="put your username here exactly as you would enter it to log in normally WITHOUT the @dublinschool.org at the end of it"
         uname = create_linked_entry(self.diag, 'Username', helpfultext=helptext)
         uname[0].grid(row=1,column=0, sticky='nsew', padx=3)
         self.uname=uname[1]
+        self.unameframe = uname[0]
         self.uname.set(conf.get_username())
         args['show']='*' #we change for the password box to only show ****s
-        upass = create_linked_entry(self.diag, 'Password', arguments={})
+        upass = create_linked_entry(self.diag, 'Password', arguments=args)
         upass[0].grid(row=2,column=0, sticky='nsew', padx=3)
         #TODO: make password characters represented with * here
         self.upass=upass[1]
+        self.upassframe = upass[0]
         self.upass.set(conf.get_password())
         bframe = tk.Frame(self.diag) #holds buttons
         tk.Button(bframe, text="Okay", command=self.okay, width=10).grid(row=0,column=0)
-        tk.Button(bframe, text="Test", command=self.test, width=10).grid(row=0,column=1)
+        unimportant_button = tk.Button(bframe, text="Test", command=self.test, width=10)
+        unimportant_button.grid(row=0,column=1)
+        self.bheight = unimportant_button.winfo_reqheight()+6
         bframe.grid(row=3, column=0, sticky=tk.E, padx=3, pady=3)
+        height = self.intframe.winfo_reqheight() + self.unameframe.winfo_reqheight() + self.upassframe.winfo_reqheight() + self.bheight #get what the height should be
+        self.diag.geometry("300x"+str(height)) #set default window size
+        self.diag.minsize(300, 0)
+        self.diag.update()
+        self.what_size('blah')#make the window the right size in the beginning
+        self.diag.bind("<Configure>", self.what_size)
 
     def okay(self):
         if(self.test()):
