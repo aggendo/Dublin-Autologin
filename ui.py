@@ -5,11 +5,35 @@ import config as config
 
 conf = config.config() #create an instance of config
 
-def create_linked_entry(root, Label):
-    frame = tk.Frame(root)
+# FIXME: make create_linked_entry a class
+# TODO:
+
+ 
+def realtime_text_wrap(event):
+    entry=event.widget
+    # FIXME: make this a global method, to prevent function object creation
+    # for every label.
+    pad = 0
+    pad += int(str(entry['bd']))
+    pad += int(str(entry['padx']))
+    pad *= 2
+    entry.configure(wraplength = event.width - pad)
+
+#returns a frame containing the widgets and a StringVar arguments are fed to the Entry
+def create_linked_entry(root, Label, arguments={}, helpfultext=None):
+    frame = tk.LabelFrame(root, relief=tk.GROOVE, borderwidth=2, text=Label, bd=2, pady=4, labelanchor=tk.N, padx=4)
     string = tk.StringVar()
-    tk.Label(frame, text=Label).grid(row=0, column=0)
-    tk.Entry(frame, textvariable=string).grid(row=1, column=0)
+    tk.Grid.columnconfigure(frame, 0, weight=1)
+    #tk.Grid.rowconfigure(frame, 0, weight=1)
+    #tk.Grid.rowconfigure(frame, 1, weight=1)
+    if(helpfultext): #is helpful text not null
+        helptext = tk.Label(frame, text=helpfultext, anchor=tk.W, justify=tk.LEFT, bd=2)
+        helptext.bind("<Configure>", realtime_text_wrap) #allows the wrap to resize with the window
+        helptext.grid(row=1, column=0, sticky='ew')
+    
+    tk.Entry(frame, textvariable=string, **arguments).grid(row=2, column=0, sticky='ew')
+    #name = tk.Label(frame, text=Label)
+    #name.grid(row=0, column=0, sticky='nsew')
     return((frame, string))
 
 class prompt_something:
@@ -31,7 +55,7 @@ class prompt_something:
         return(None) #nothing changes
 
     def okay(self):
-        if self.verify: #we need to verify (verify is not None)
+        if self.verify: #we need to verify that (verify is not None)
             erno = self.verify(self.string.get()) #test the string and return true if success
             if erno.equals(None):           #safer way of handling
                 return(self.string.get())
@@ -41,23 +65,34 @@ class prompt_something:
 class Uname_and_pass_widget:
     def __init__(self):
         self.diag = tk.Tk()
+        self.diag.wm_title=('AutoLogin Settings')
+        #args holds the common properties for the linked entries
+        args={}
+        args['width']=32
+        #make everything resizable
+        tk.Grid.columnconfigure(self.diag, 0, weight=1, pad=3)
+        #tk.Grid.rowconfigure(self.diag, 0, weight=1)
+        #tk.Grid.rowconfigure(self.diag, 1, weight=1)
+        #tk.Grid.rowconfigure(self.diag, 2, weight=1)
         interval =  create_linked_entry(self.diag, 'interval')
-        interval[0].grid(row=0,column=0)
+        interval[0].grid(row=0,column=0, sticky='nsew', padx=3)
         self.interval = interval[1]
         #TODO: read interval from config file and put it in the bar
-        uname = create_linked_entry(self.diag, 'Username')
-        uname[0].grid(row=1,column=0)
+        helptext="put your username here exactly as you would enter it to log in normally WITHOUT the @dublinschool.org at the end of it"
+        uname = create_linked_entry(self.diag, 'Username', helpfultext=helptext)
+        uname[0].grid(row=1,column=0, sticky='nsew', padx=3)
         self.uname=uname[1]
         self.uname.set(conf.get_username())
-        upass = create_linked_entry(self.diag, 'Password')
-        upass[0].grid(row=2,column=0)
+        args['show']='*' #we change for the password box to only show ****s
+        upass = create_linked_entry(self.diag, 'Password', arguments={})
+        upass[0].grid(row=2,column=0, sticky='nsew', padx=3)
         #TODO: make password characters represented with * here
         self.upass=upass[1]
         self.upass.set(conf.get_password())
         bframe = tk.Frame(self.diag) #holds buttons
-        tk.Button(bframe, text="Okay", command=self.okay).grid(row=0,column=0)
-        tk.Button(bframe, text="Test", command=self.test).grid(row=0,column=1)
-        bframe.grid(row=3, column=0)
+        tk.Button(bframe, text="Okay", command=self.okay, width=10).grid(row=0,column=0)
+        tk.Button(bframe, text="Test", command=self.test, width=10).grid(row=0,column=1)
+        bframe.grid(row=3, column=0, sticky=tk.E, padx=3, pady=3)
 
     def okay(self):
         if(self.test()):
