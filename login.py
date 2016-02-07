@@ -4,23 +4,25 @@ from sys import platform as OSName
 from os import name as SYSPlat
 import logging
 import time
+import config as cfg
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
 url = 'https://192.168.23.1:4100/wgcgi.cgi'
 Uport=4100
 Verify=False
 match="./auth_portal/Default/logo" #look for in responce to see if login failed.
 
-###USER SETTINGS####
-Username="blah username here" #no @dublinschool.org
-Password="blah password here"
-###END OF USER SETTINGS###
+config = cfg.config()
+Username=config.get_username()  #read these from the config file
+Password=config.get_password()
 
-#Connection-specific DNS Suffix  . :
-def attempt_login():
-    Data= {'fw_username':Username,'fw_password':str(Password),
+#the following stores all the information needed to log in
+Data= {'fw_username':Username,'fw_password':str(Password),
            'fw_domain': 'dublinschool.org', 'submit': 'Login',
            'action':'fw_logon', 'fw_logon_type':'logon',
            'redirect':""}
+
+#Connection-specific DNS Suffix  . :
+def attempt_login():
     req = requests.post(url, data=Data, verify=Verify)#prename+Username+prepass+str(Password)+footer)
     #print(req.text)
     if(match in req.text): #login failed
@@ -58,3 +60,4 @@ if(__name__=="__main__"):
     while True:
         checkwifi()
         time.sleep(60*15) #wait 15m
+        #TODO: read config file for time
