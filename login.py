@@ -4,6 +4,7 @@ from sys import platform as OSName
 from os import name as SYSPlat
 import logging
 import time
+import ui as Ui
 import config as cfg
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
 url = 'https://192.168.23.1:4100/wgcgi.cgi'
@@ -14,6 +15,10 @@ match="./auth_portal/Default/logo" #look for in responce to see if login failed.
 config = cfg.config()
 Username=config.get_username()  #read these from the config file
 Password=config.get_password()
+if config.is_auto_generated():
+    UI = Ui.Uname_and_pass_widget()
+    UI.start()
+    config.set_wizard_ran() //TODO: fix this method so that actually checks the things
 
 #the following stores all the information needed to log in
 Data= {'fw_username':Username,'fw_password':str(Password),
