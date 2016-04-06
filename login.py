@@ -36,6 +36,7 @@ def attempt_login():
 
 def checkwifi():
     #here is some trickery to work in windows
+    #without making a cmd window pop up frequently
     startupinfo = None
     print "os.name=="+OSName
     if OSName == 'nt' or OSName =="win32": #the user is using windows so we don't want cmd to show
