@@ -6,7 +6,7 @@ import logging
 import time
 import config as cfg
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
-url = 'https://192.168.23.1:4100/wgcgi.cgi'
+url = 'https://192.168.23.1:4100/logon.shtml'
 Uport=4100
 Verify=False
 match="./auth_portal/Default/logo" #look for in responce to see if login failed.
@@ -29,7 +29,7 @@ Data= {'fw_username':Username,'fw_password':str(Password),
            'action':'fw_logon', 'fw_logon_type':'logon',
            'redirect':""}
 #what you send to log out of the wifi
-LogOut = {'fw_logon_type':'logout'}
+LogOut = {'Logout':'Logout','action':'fw_logon','fw_logon_type':'logout'}
 
 def logout():
     logging.info("attempting log out")
