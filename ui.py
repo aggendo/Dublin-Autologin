@@ -134,7 +134,7 @@ class Uname_and_pass_widget:
                 Min=minL[i]
                 Max=maxL[i]
                 if inter<Max and inter>Min:#its in that range
-                    if Max-interz>mins-inter: #if it is closer to max
+                    if Max-inter>mins-inter: #if it is closer to max
                         seconds=Max
                     else: #set to min
                         seconds=Min

@@ -4,7 +4,6 @@ from sys import platform as OSName
 from os import name as SYSPlat
 import logging
 import time
-import ui as Ui
 import config as cfg
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
 url = 'https://192.168.23.1:4100/wgcgi.cgi'
@@ -13,18 +12,30 @@ Verify=False
 match="./auth_portal/Default/logo" #look for in responce to see if login failed.
 
 config = cfg.config()
-Username=config.get_username()  #read these from the config file
-Password=config.get_password()
-if config.is_auto_generated():
-    UI = Ui.Uname_and_pass_widget()
-    UI.start()
-    config.set_wizard_ran() //TODO: fix this method so that actually checks the things
+Username = config.get_username()  # read these from the config file
+Password = config.get_password()
+Interval = config.get_interval()
+
+del config
+
+def performLoginCheck():
+    if Username == "blahname":
+        print("this script has been run for the first time or the config has not been edited, please edit config.cfg and enter the correct things")
+        exit(1)
 
 #the following stores all the information needed to log in
 Data= {'fw_username':Username,'fw_password':str(Password),
            'fw_domain': 'dublinschool.org', 'submit': 'Login',
            'action':'fw_logon', 'fw_logon_type':'logon',
            'redirect':""}
+#what you send to log out of the wifi
+LogOut = {'fw_logon_type':'logout'}
+
+def logout():
+    logging.info("attempting log out")
+    req = requests.post(url, data=LogOut, verify=Verify)
+    logging.info("logged out")
+    print "logged out"
 
 #Connection-specific DNS Suffix  . :
 def attempt_login():
@@ -61,9 +72,20 @@ def checkwifi():
         wifi = Wireless('wlan0')
         if(wifi.getEssid()=="student"):
             return(True)
+    else:
+        #TODO: fix this so that it can fail if you aren't connected
+        return(True)
+
+def daemonInnerLoop():
+    while true:
+        attempt_login();
+        time.sleep(Interval)
+        #TODO: make sure you are connected to dublin internet here
+
 
 if(__name__=="__main__"):
-    while True:
-        checkwifi()
-        time.sleep(60*15) #wait 15m
-        #TODO: read config file for time
+    performLoginCheck()
+    if(checkwifi()):
+        attempt_login()
+    else:
+        print("you do not seem to be connected to the network, maybe your settings are wrong?!?")

@@ -36,13 +36,6 @@ class config:
     def get_interval(self):
         return(self.config.get("Settings", "interval")) #has a unit at the end so no int
 
-    def is_auto_generated(self):
-        return(self.config.get("Settings", "run wizard"))#tell us that the user wants the wizard to run now
-
-    def set_wizard_ran(self):
-        self.config.set("Settings", "run wizard", '0')
-        self.write_out()
-
     def set_username(self, name):
         self.config.set("Credentials", "username", name)
         self.write_out()
@@ -59,7 +52,6 @@ class config:
         self.config.set("Credentials", "username", "blahname")
         self.config.set("Credentials", "password", "blahpass")
         self.config.add_section("Settings")
-        self.config.set("Settings", "interval", "1hr")
-        self.config.set("Settings", "run wizard", "1") #set that we need to run the wizard
+        self.config.set("Settings", "interval", "100")
         self.writeout()
 d = config()

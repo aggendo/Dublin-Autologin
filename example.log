@@ -1,0 +1,7 @@
+INFO:root:attempting log out
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): 192.168.23.1
+INFO:root:attempting log out
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): 192.168.23.1
+DEBUG:requests.packages.urllib3.connectionpool:"POST /wgcgi.cgi HTTP/1.1" 302 None
+DEBUG:requests.packages.urllib3.connectionpool:"GET /./fw_user_login.html HTTP/1.1" 200 719
+INFO:root:logged out
